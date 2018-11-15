@@ -24,12 +24,15 @@ var strategyConfs = make(map[string]string, 128)
 
 //Init {"Args":["init"]}
 func (t *Chaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
-	_, args := stub.GetFunctionAndParameters()
+	fucName, args := stub.GetFunctionAndParameters()
+	fmt.Printf("fucName is %s\narguments is %v\n", fucName, args)
+	log.Printf("fucName is %s\narguments is %v\n", fucName, args)
 	if len(args) != 1 {
 		return shim.Error("Incorrect number of arguments. Expecting 1")
 	}
 	configPath := args[0]
 	log.Printf("config file path is:%s\n", configPath)
+	fmt.Printf("config file path is:%s\n", configPath)
 	cfg, err := ini.Load(configPath)
 
 	if err != nil {
@@ -43,8 +46,17 @@ func (t *Chaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
 	digestsMethod := cfg.Section("Security").Key("digests_method").String()
 	signatureMethod := cfg.Section("Security").Key("signature_method").String()
 	partner := cfg.Section("Merchant").Key("partner").String()
-	pubKey, _ := rsautils.DumpPublicKeyBase64(pubPath)
-	privKey, _ := rsautils.DumpKSBase64(privPath, passwd, partner)
+
+	pubKey, err := rsautils.DumpPublicKeyBase64(pubPath)
+	if err != nil {
+		errMsg := fmt.Sprintf("dump public key from [%s] meet error", pubPath)
+		return shim.Error(errMsg)
+	}
+	privKey, err := rsautils.DumpKSBase64(privPath, passwd, partner)
+	if err != nil {
+		errMsg := fmt.Sprintf("dump private key from [%s] meet error", privPath)
+		return shim.Error(errMsg)
+	}
 
 	confs["pubKey"] = pubKey
 	confs["privKey"] = privKey

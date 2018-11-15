@@ -3,6 +3,7 @@ package ksutils
 import (
 	"crypto/x509"
 	"encoding/pem"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -11,23 +12,23 @@ import (
 	"github.com/pavel-v-chernykh/keystore-go"
 )
 
-//ReadKeyStore
-func ReadKeyStore(filename string, password []byte) keystore.KeyStore {
+//ReadKeyStore export
+func ReadKeyStore(filename string, password []byte) (keystore.KeyStore, error) {
 	f, err := os.Open(filename)
 	defer f.Close()
 
 	if err != nil {
-		log.Fatal(err)
+		return nil, fmt.Errorf("dump keystore from [%s] meet error", filename)
 	}
 
 	keyStore, err := keystore.Decode(f, password)
 	if err != nil {
-		log.Fatal(err)
+		return nil, fmt.Errorf("dump keystore from [%s] meet error", filename)
 	}
-	return keyStore
+	return keyStore, nil
 }
 
-//WriteKeyStore
+//WriteKeyStore export
 func WriteKeyStore(keyStore keystore.KeyStore, filename string, password []byte) {
 	o, err := os.Create(filename)
 	defer o.Close()
@@ -63,7 +64,7 @@ func main() {
 	}
 
 	keyStore := keystore.KeyStore{
-		"alias": &keystore.PrivateKeyEntry{
+		"100000": &keystore.PrivateKeyEntry{
 			Entry: keystore.Entry{
 				CreationDate: time.Now(),
 			},
@@ -71,14 +72,14 @@ func main() {
 		},
 	}
 
-	password := []byte{'p', 'a', 's', 's', 'w', 'o', 'r', 'd'}
+	password := []byte("BrlBOjFC84jag1I6")
 
 	defer zeroing(password)
 	WriteKeyStore(keyStore, "keystore.jks", password)
 
-	ks := ReadKeyStore("keystore.jks", password)
+	ks, _ := ReadKeyStore("keystore.jks", password)
 
-	entry := ks["alias"]
+	entry := ks["100000"]
 	privKeyEntry := entry.(*keystore.PrivateKeyEntry)
 
 	key, err := x509.ParsePKCS8PrivateKey(privKeyEntry.PrivKey)

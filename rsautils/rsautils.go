@@ -82,7 +82,10 @@ func RSAVerify(pubKeyBase64 string, msg string, signedData string) bool {
 
 //DumpKSBase64 export
 func DumpKSBase64(kspath string, kspwd string, key string) (string, error) {
-	ks := ksutils.ReadKeyStore(kspath, []byte(kspwd))
+	ks, err := ksutils.ReadKeyStore(kspath, []byte(kspwd))
+	if err != nil {
+		return "", fmt.Errorf("dump keystore from [%s] meet error", kspath)
+	}
 	entry := ks[key]
 	privKeyEntry := entry.(*keystore.PrivateKeyEntry)
 
@@ -90,11 +93,11 @@ func DumpKSBase64(kspath string, kspwd string, key string) (string, error) {
 	//private, err := x509.ParsePKCS8PrivateKey(p.Bytes)
 
 	if err != nil {
-		log.Fatal(err)
+		return "", fmt.Errorf("dump keystore from [%s] meet error", kspath)
 	}
 	privkeyBytes, err := x509.MarshalPKCS8PrivateKey(private)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("dump keystore from [%s] meet error", kspath)
 	}
 	keybase64 := base64.StdEncoding.EncodeToString(privkeyBytes)
 	return keybase64, nil
@@ -104,16 +107,16 @@ func DumpKSBase64(kspath string, kspwd string, key string) (string, error) {
 func DumpPublicKeyBase64(filename string) (string, error) {
 	pbe, err := ioutil.ReadFile(filename)
 	if err != nil {
-		log.Fatal(err)
+		return "", fmt.Errorf("dump public key from [%s] meet error", filename)
 	}
 
 	p, _ := pem.Decode(pbe)
 	if p == nil {
-		log.Fatal("Should have at least one pem block")
+		return "", fmt.Errorf("dump public key from [%s] meet error", filename)
 	}
 
 	if p.Type != "PUBLIC KEY" {
-		log.Fatal("Should be a rsa public key")
+		return "", fmt.Errorf("dump public key from [%s] meet error", filename)
 	}
 
 	pub, err := x509.ParsePKIXPublicKey(p.Bytes)
@@ -132,16 +135,16 @@ func DumpPublicKeyBase64(filename string) (string, error) {
 func DumpPrivateKeyBase64(filename string) (string, error) {
 	pbe, err := ioutil.ReadFile(filename)
 	if err != nil {
-		log.Fatal(err)
+		return "", fmt.Errorf("dump private key from [%s] meet error", filename)
 	}
 
 	p, _ := pem.Decode(pbe)
 	if p == nil {
-		log.Fatal("Should have at least one pem block")
+		return "", fmt.Errorf("dump private key from [%s] meet error", filename)
 	}
 
 	if p.Type != "PRIVATE KEY" {
-		log.Fatal("Should be a rsa private key")
+		return "", fmt.Errorf("dump private key from [%s] meet error", filename)
 	}
 
 	private, err := x509.ParsePKCS8PrivateKey(p.Bytes)
