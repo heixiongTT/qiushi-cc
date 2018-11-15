@@ -27,49 +27,62 @@ func (t *Chaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
 	fucName, args := stub.GetFunctionAndParameters()
 	fmt.Printf("fucName is %s\narguments is %v\n", fucName, args)
 	log.Printf("fucName is %s\narguments is %v\n", fucName, args)
-	if len(args) != 1 {
-		return shim.Error("Incorrect number of arguments. Expecting 1")
+	if len(args) < 1 {
+		return shim.Error("Incorrect number of arguments. Expecting great than 1")
 	}
-	configPath := args[0]
-	log.Printf("config file path is:%s\n", configPath)
-	fmt.Printf("config file path is:%s\n", configPath)
-	cfg, err := ini.Load(configPath)
-
-	if err != nil {
-		log.Fatal(err)
+	workMode := args[0]
+	if workMode == "direct" {
+		confs["pubKey"] = args[1]
+		confs["privKey"] = args[2]
+		confs["partner"] = args[3]
+		strategyConfs["cryptoMethod"] = "RSA"
+		strategyConfs["digestsMethod"] = "MD5"
+		strategyConfs["signatureMethod"] = "RSA"
+		return shim.Success([]byte(nil))
 	}
+	if workMode == "config" {
+		configPath := args[1]
+		log.Printf("config file path is:%s\n", configPath)
+		fmt.Printf("config file path is:%s\n", configPath)
+		cfg, err := ini.Load(configPath)
 
-	pubPath := cfg.Section("Security").Key("public_key_path").String()
-	privPath := cfg.Section("Security").Key("private_key_path").String()
-	passwd := cfg.Section("Security").Key("ks_pwd").String()
-	cryptoMethod := cfg.Section("Security").Key("crypto_method").String()
-	digestsMethod := cfg.Section("Security").Key("digests_method").String()
-	signatureMethod := cfg.Section("Security").Key("signature_method").String()
-	partner := cfg.Section("Merchant").Key("partner").String()
+		if err != nil {
+			log.Fatal(err)
+		}
 
-	pubKey, err := rsautils.DumpPublicKeyBase64(pubPath)
-	if err != nil {
-		errMsg := fmt.Sprintf("dump public key from [%s] meet error", pubPath)
-		return shim.Error(errMsg)
+		pubPath := cfg.Section("Security").Key("public_key_path").String()
+		privPath := cfg.Section("Security").Key("private_key_path").String()
+		passwd := cfg.Section("Security").Key("ks_pwd").String()
+		cryptoMethod := cfg.Section("Security").Key("crypto_method").String()
+		digestsMethod := cfg.Section("Security").Key("digests_method").String()
+		signatureMethod := cfg.Section("Security").Key("signature_method").String()
+		partner := cfg.Section("Merchant").Key("partner").String()
+
+		pubKey, err := rsautils.DumpPublicKeyBase64(pubPath)
+		if err != nil {
+			errMsg := fmt.Sprintf("dump public key from [%s] meet error", pubPath)
+			return shim.Error(errMsg)
+		}
+		privKey, err := rsautils.DumpKSBase64(privPath, passwd, partner)
+		if err != nil {
+			errMsg := fmt.Sprintf("dump private key from [%s] meet error", privPath)
+			return shim.Error(errMsg)
+		}
+
+		confs["pubKey"] = pubKey
+		confs["privKey"] = privKey
+		confs["partner"] = partner
+		strategyConfs["cryptoMethod"] = cryptoMethod
+		strategyConfs["digestsMethod"] = digestsMethod
+		strategyConfs["signatureMethod"] = signatureMethod
+		fmt.Printf("pubKey is %s\n", pubKey)
+		fmt.Printf("partner is %s\n", partner)
+		fmt.Printf("cryptoMethod is %s\n", cryptoMethod)
+		fmt.Printf("digestsMethod is %s\n", digestsMethod)
+		fmt.Printf("signatureMethod is %s\n", signatureMethod)
+		return shim.Success([]byte(configPath))
 	}
-	privKey, err := rsautils.DumpKSBase64(privPath, passwd, partner)
-	if err != nil {
-		errMsg := fmt.Sprintf("dump private key from [%s] meet error", privPath)
-		return shim.Error(errMsg)
-	}
-
-	confs["pubKey"] = pubKey
-	confs["privKey"] = privKey
-	confs["partner"] = partner
-	strategyConfs["cryptoMethod"] = cryptoMethod
-	strategyConfs["digestsMethod"] = digestsMethod
-	strategyConfs["signatureMethod"] = signatureMethod
-	fmt.Printf("pubKey is %s\n", pubKey)
-	fmt.Printf("partner is %s\n", partner)
-	fmt.Printf("cryptoMethod is %s\n", cryptoMethod)
-	fmt.Printf("digestsMethod is %s\n", digestsMethod)
-	fmt.Printf("signatureMethod is %s\n", signatureMethod)
-	return shim.Success([]byte(configPath))
+	return shim.Success([]byte(nil))
 }
 
 //{"Args":["query","key"]}'
