@@ -245,7 +245,7 @@ func (t *Chaincode) writeMultiSegData(stub shim.ChaincodeStubInterface, key, val
 }
 
 func parseMultiSegData(encryptJSONValue string) (string, error) {
-	cryptoDescriptor := gjson.Get(encryptJSONValue, "_hdr.cryptoDescriptor").String()
+	cryptoDescriptor := gjson.Get(encryptJSONValue, "header.cryptoDescriptor").String()
 	var cds []common.CryptoDescriptor
 	if err := json.Unmarshal([]byte(cryptoDescriptor), &cds); err != nil {
 		return encryptJSONValue, fmt.Errorf("unmarshal cryptoDescriptor error: " + err.Error())
