@@ -148,8 +148,8 @@ func (t *Chaincode) translateData(stub shim.ChaincodeStubInterface, id, pid, lic
 	}
 
 	var writeTo = make(map[string]interface{}, 128)
-	writeTo["_hdr"] = header
-	writeTo["_ftr"] = footer
+	writeTo["header"] = header
+	writeTo["footer"] = footer
 	rawDataMap, err := common.CryptoDataByDescriptor(value, cds, licensee)
 	if err != nil {
 		return shim.Error("@@CryptoDataByDescriptor meet error: " + err.Error())

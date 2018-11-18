@@ -24,6 +24,7 @@ func main() {
 	pubPath := cfg.Section("Security").Key("public_key_path").String()
 	privPath := cfg.Section("Security").Key("private_key_path").String()
 	passwd := cfg.Section("Security").Key("ks_pwd").String()
+	partner := cfg.Section("Merchant").Key("partner").String()
 
 	// //读取配置文件
 	// //获取公钥路径
@@ -31,7 +32,9 @@ func main() {
 	pubKey, _ := rsautils.DumpPublicKeyBase64(pubPath)
 	fmt.Println(pubKey)
 	fmt.Println("============================================")
-	privKey, _ := rsautils.DumpKSBase64(privPath, passwd, "alias")
+	privKey, _ := rsautils.DumpKSBase64(privPath, passwd, partner)
+	fmt.Println(privKey)
+	fmt.Println("============================================")
 	// fmt.Println(pubKey)
 	// fmt.Println(privKey)
 	// encryptData := rsautils.RSAEncrypt(pubKey, msg)
