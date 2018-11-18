@@ -18,10 +18,10 @@ type Header struct {
 	Partner string `json:"partner"`
 
 	//数据关联业务方上链策略
-	Strategy map[string]string `json:"strategy"`
+	Strategy string `json:"strategy"`
 
 	//加密描述符
-	CryptoDescriptor []CryptoDescriptor `json:"cryptoDescriptor"`
+	CryptoDescriptor string `json:"cryptoDescriptor"`
 }
 
 //Footer the data footer in fabric network

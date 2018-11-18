@@ -122,14 +122,18 @@ func (t *Chaincode) translateData(stub shim.ChaincodeStubInterface, id, pid, lic
 		return shim.Error("unmarshal cryptoDescriptor error:" + err.Error())
 	}
 	decryptDataMap, err := common.DecryptoDataByDescriptor(encryptJSONValue, cds, confs["privKey"])
+	strategyBytes, err := json.Marshal(strategyConfs)
+	if err != nil {
+		return shim.Error("marshall strategyConfs error: " + err.Error())
+	}
 	header := common.Header{
 		Key:              id,
 		PKey:             pid,
 		Licensee:         licensee,
 		Authorizer:       confs["pubKey"],
-		Strategy:         strategyConfs,
+		Strategy:         string(strategyBytes),
 		Partner:          confs["partner"],
-		CryptoDescriptor: cds,
+		CryptoDescriptor: cryptoDescriptor,
 	}
 	if err != nil {
 		fmt.Println(err)
@@ -186,15 +190,19 @@ func (t *Chaincode) writeMultiSegData(stub shim.ChaincodeStubInterface, key, val
 	if err := json.Unmarshal([]byte(cryptoDescriptor), &cds); err != nil {
 		return shim.Error("unmarshal cryptoDescriptor error: " + err.Error())
 	}
+	strategyBytes, err := json.Marshal(strategyConfs)
+	if err != nil {
+		return shim.Error("marshall strategyConfs error: " + err.Error())
+	}
 
 	header := common.Header{
 		Key:              key,
 		PKey:             key,
 		Licensee:         confs["pubKey"],
 		Authorizer:       confs["pubKey"],
-		Strategy:         strategyConfs,
+		Strategy:         string(strategyBytes),
 		Partner:          confs["partner"],
-		CryptoDescriptor: cds,
+		CryptoDescriptor: cryptoDescriptor,
 	}
 
 	digests := digestsutils.MD5(value)
