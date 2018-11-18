@@ -116,7 +116,7 @@ func (t *Chaincode) translateData(stub shim.ChaincodeStubInterface, id, pid, lic
 		return shim.Error("query fail " + gerr.Error())
 	}
 	encryptJSONValue := string(gbytes)
-	cryptoDescriptor := gjson.Get(encryptJSONValue, "_hdr.cryptoDescriptor").String()
+	cryptoDescriptor := gjson.Get(encryptJSONValue, "header.cryptoDescriptor").String()
 	var cds []common.CryptoDescriptor
 	if err := json.Unmarshal([]byte(cryptoDescriptor), &cds); err != nil {
 		return shim.Error("unmarshal cryptoDescriptor error:" + err.Error())
@@ -206,8 +206,8 @@ func (t *Chaincode) writeMultiSegData(stub shim.ChaincodeStubInterface, key, val
 	}
 
 	var writeTo = make(map[string]interface{}, 128)
-	writeTo["_hdr"] = header
-	writeTo["_ftr"] = footer
+	writeTo["header"] = header
+	writeTo["footer"] = footer
 	rawDataMap, err := common.CryptoDataByDescriptor(value, cds, confs["pubKey"])
 	if err != nil {
 		return shim.Error("@@CryptoDataByDescriptor meet error: " + err.Error())
