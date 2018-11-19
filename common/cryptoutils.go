@@ -28,10 +28,11 @@ func CryptoDataByDescriptor(jsonData string, cds []CryptoDescriptor, pubKey stri
 		for _, key := range keys {
 			rawValue := gjson.Get(jsonData, key).String()
 			log.Printf("@@CryptoDataByDescriptor execute begin key is [%s]\nvalue is [%v]\n", key, rawValue)
-			encryptValue := rsautils.RSAEncrypt(pubKey, rawValue)
-
-			log.Printf("@@CryptoDataByDescriptor encryptData sucess.[%s]\n", encryptValue)
-			rawData[key] = encryptValue
+			if rawValue != "" {
+				encryptValue := rsautils.RSAEncrypt(pubKey, rawValue)
+				log.Printf("@@CryptoDataByDescriptor encryptData sucess.[%s]\n", encryptValue)
+				rawData[key] = encryptValue
+			}
 		}
 	}
 	return rawData, nil
