@@ -110,13 +110,15 @@ func (t *Chaincode) write(stub shim.ChaincodeStubInterface, key, value string) p
 
 //{"Args":["translateData","ID","PID",Licensee]}
 func (t *Chaincode) translateData(stub shim.ChaincodeStubInterface, id, pid, licensee string) pb.Response {
-	fmt.Printf("write %s,value is %s,SegDescriptor is %s\n", id, pid, licensee)
+	fmt.Printf("id %s,pid is %s,licensee is %s\n", id, pid, licensee)
 	gbytes, gerr := stub.GetState(pid)
 	if gerr != nil {
 		return shim.Error("query fail " + gerr.Error())
 	}
 	encryptJSONValue := string(gbytes)
+	fmt.Printf("encryptJSONValue is %s\n", encryptJSONValue)
 	cryptoDescriptor := gjson.Get(encryptJSONValue, "header.cryptoDescriptor").String()
+	fmt.Printf("header.cryptoDescriptor is %s\n", cryptoDescriptor)
 	var cds []common.CryptoDescriptor
 	if err := json.Unmarshal([]byte(cryptoDescriptor), &cds); err != nil {
 		return shim.Error("unmarshal cryptoDescriptor error:" + err.Error())
