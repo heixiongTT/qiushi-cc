@@ -99,6 +99,18 @@ func (t *Chaincode) query(stub shim.ChaincodeStubInterface, key string) pb.Respo
 	return shim.Success([]byte(decryptString))
 }
 
+func (t *Chaincode) exists(stub shim.ChaincodeStubInterface, key string) pb.Response {
+	fmt.Printf("exists %s\n", key)
+	bytes, err := stub.GetState(key)
+	if err != nil {
+		return shim.Error("query fail " + err.Error())
+	}
+	if bytes != nil {
+		return shim.Success([]byte("exists"))
+	}
+	return shim.Success([]byte("not_exists"))
+}
+
 //{"Args":["write","key","value"]}'
 func (t *Chaincode) write(stub shim.ChaincodeStubInterface, key, value string) pb.Response {
 	fmt.Printf("write %s, value is %s\n", key, value)
@@ -351,6 +363,11 @@ func (t *Chaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 			return shim.Error("parametes's number is wrong")
 		}
 		return t.query(stub, args[0])
+	case "exists":
+		if len(args) != 1 {
+			return shim.Error("parametes's number is wrong")
+		}
+		return t.exists(stub, args[0])
 	case "queryByParam":
 		if len(args) != 1 {
 			return shim.Error("parametes's number is wrong")
