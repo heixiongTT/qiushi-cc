@@ -352,9 +352,9 @@ func (t *Chaincode) delByKey(stub shim.ChaincodeStubInterface, key string) pb.Re
 	fmt.Printf("del %s\n", key)
 	err := stub.DelState(key)
 	if err != nil {
-		return shim.Error("query fail " + err.Error())
+		return shim.Error("delete fail :" + err.Error())
 	}
-	return shim.Success(nil)
+	return shim.Success([]byte("SUCCESS"))
 }
 
 //Invoke export
@@ -388,6 +388,11 @@ func (t *Chaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 			return shim.Error("parametes's number is wrong")
 		}
 		return t.translateData(stub, args[0], args[1], args[2])
+	case "del": //删除
+		if len(args) != 1 {
+			return shim.Error("parametes's number is wrong")
+		}
+		return t.delByKey(stub, args[0])
 	default:
 		return shim.Error("Invalid invoke function name.")
 	}
