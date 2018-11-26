@@ -95,6 +95,9 @@ func (t *Chaincode) query(stub shim.ChaincodeStubInterface, key string) pb.Respo
 	if err != nil {
 		return shim.Error("query fail " + err.Error())
 	}
+	if bytes == nil {
+		shim.Success([]byte(nil))
+	}
 	decryptString, err := parseMultiSegData(string(bytes))
 	if err != nil {
 		return shim.Error("parseMultiSegData error " + err.Error())

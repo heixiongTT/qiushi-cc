@@ -101,9 +101,14 @@ func DecryptoDataByDescriptor(encryptJSONData string, cds []CryptoDescriptor, pr
 	//字符串还原为对象
 	for _, cd := range cds {
 		keys := cd.CryptoFields
-		for _, key := range keys {
-			rawData[key] = gjson.Parse(rawData[key].(string)).Value()
+		if cd.Level == "PUBLIC" || cd.Level == "PATH" {
+			for _, key := range keys {
+				rawData[key] = gjson.Parse(rawData[key].(string)).Value()
+			}
 		}
+
+		//REPORT场景无需处理
+
 	}
 
 	return rawData, nil
