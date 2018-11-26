@@ -190,22 +190,27 @@ func LoadPublicKeyBase64(base64key string) (*rsa.PublicKey, error) {
 	return pubKey.(*rsa.PublicKey), nil
 }
 
+// func main() {
+// 	privPath := "./privkey.pem"
+// 	pubPath := "./pubkey.pem"
+
+// 	msg := "helloworld"
+// 	// /msg2 := "helloworld2"
+// 	privKeyBase64, _ := DumpPrivateKeyBase64(privPath)
+// 	pubKeyBase64, _ := DumpPublicKeyBase64(pubPath)
+// 	fmt.Println(privKeyBase64)
+// 	fmt.Println(pubKeyBase64)
+// 	encryptMsg := RSAEncrypt(pubKeyBase64, msg)
+// 	decryptMsg := RSADecrypt(privKeyBase64, encryptMsg)
+// 	fmt.Println(decryptMsg)
+
+// 	signedMsg := RSASignature(privPath, msg)
+// 	err := RSAVerify(pubPath, msg, signedMsg)
+
+// 	fmt.Println(err)
+// }
+
 func main() {
-	privPath := "./privkey.pem"
-	pubPath := "./pubkey.pem"
-
-	msg := "helloworld"
-	// /msg2 := "helloworld2"
-	privKeyBase64, _ := DumpPrivateKeyBase64(privPath)
-	pubKeyBase64, _ := DumpPublicKeyBase64(pubPath)
-	fmt.Println(privKeyBase64)
-	fmt.Println(pubKeyBase64)
-	encryptMsg := RSAEncrypt(pubKeyBase64, msg)
-	decryptMsg := RSADecrypt(privKeyBase64, encryptMsg)
-	fmt.Println(decryptMsg)
-
-	signedMsg := RSASignature(privPath, msg)
-	err := RSAVerify(pubPath, msg, signedMsg)
-
-	fmt.Println(err)
+	priKey := "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAMHaqzNXFWMuCJn91eCtmC+s0VhvUr7HhpIFITGZBUikfjR1WuwMSH/ryh6GWy2fpHdu3+8H0V4wcbATGRG0jiS5e80Kb/+MldOAXO8EPkWfXAQGGg6PKMIgqoes0pnJ81oMqFmHQYAKMI8cuJ300FWjL5FRai16F0CTcZZLRObnAgMBAAECgYAE15ZxKNqy6IJ0fj+qZguoHTP5doZll4xH93LVz1Gvd9RjMQ89WC0zbMtWqdp7MEKmbRGQ4ewb4y/jywZUR+NJAmsYoBLLcdnJ98zUMqaCa8/AjmgVIW1c6gsFCMTFuv3fInYjibAkPmlIYMN3DFM1oiqaOmWUYnHaOmfuhTOGKQJBAOSZEaPkeD0O2ImnrpnHeZYQa2NLqb2zyC+gptcVRi1OFHPUnZmxAGhMwYdbayNLU2G/COQmNxv33xoJV49HMPUCQQDZF20upoB8N2jPLLqiBqiktqlYHIBrGtiRf59/6kl73gT1XQn9kNJt413rFjrTqyxDl5EvNhQTpZvr2uLCjV7rAkEAobXqta7UpBTRd6eIKz7iMxcQcKDAxfLdJVwXSkXBbCE09K+ugV+mMyJBMVipVMFfjeEPEB48k+toBsofB7tL1QJAdgta/ybibqjigOTdhwT/5rC8XIEDAzpR0KwI2tFWq9gJ8jFpIUwCYGZlx1MLIdXN9+MOuxE40YYXxqP68bdViQJBAMTS4UKxV6UYEqtffrToJtz5edggPsRyEGZJbwiJSLN9O4QB17KvSKsF0ljHyrjPLZGOW+GNzEPi2mLBJPvr/Io="
+	LoadPrivateKeyBase64(priKey)
 }

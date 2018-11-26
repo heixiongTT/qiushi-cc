@@ -38,6 +38,9 @@ func (t *Chaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
 		strategyConfs["cryptoMethod"] = "RSA"
 		strategyConfs["digestsMethod"] = "MD5"
 		strategyConfs["signatureMethod"] = "RSA"
+		fmt.Printf("pubKey is %s\n", pubKey)
+		fmt.Printf("privKey is %s\n", privKey)
+		fmt.Printf("partner is %s\n", partner)
 		return shim.Success([]byte(nil))
 	}
 	if workMode == "config" {
