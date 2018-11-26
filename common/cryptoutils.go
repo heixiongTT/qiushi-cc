@@ -67,16 +67,38 @@ func DecryptoDataByDescriptor(encryptJSONData string, cds []CryptoDescriptor, pr
 		return rawData, nil
 	}
 	for _, cd := range cds {
-		keys := cd.CryptoFields
-		for _, key := range keys {
-			rawValue := gjson.Get(encryptJSONData, key).String()
-			log.Printf("@@DecryptoDataByDescriptor execute begin key is [%s]\nvalue is [%v]\n", key, rawValue)
-			decryptValue := rsautils.RSADecrypt(privKey, rawValue)
+		if cd.Level == "PUBLIC" || cd.Level == "PATH" {
+			keys := cd.CryptoFields
+			for _, key := range keys {
+				rawValue := gjson.Get(encryptJSONData, key).String()
+				log.Printf("@@DecryptoDataByDescriptor execute begin key is [%s]\nvalue is [%v]\n", key, rawValue)
+				decryptValue := rsautils.RSADecrypt(privKey, rawValue)
 
-			log.Printf("@@CryptoDataByDescriptor decryptValue sucess.[%s]\n", decryptValue)
-			rawData[key] = decryptValue
+				log.Printf("@@CryptoDataByDescriptor decryptValue sucess.[%s]\n", decryptValue)
+				rawData[key] = decryptValue
+			}
 		}
+
+		if cd.Level == "REPORT" {
+			//KEY IS REPORT NAME
+			keys := cd.CryptoFields
+			for _, key := range keys {
+				innerReport := make(map[string]interface{}, 128)
+				result := gjson.Get(encryptJSONData, key)
+				result.ForEach(func(key, value gjson.Result) bool {
+					reportVal := value.String()
+					if reportVal != "" {
+						decryptReportValue := rsautils.RSADecrypt(privKey, reportVal)
+						innerReport[key.String()] = decryptReportValue
+					}
+					return true // keep iterating
+				})
+				rawData[key] = innerReport
+			}
+		}
+
 	}
+	//字符串还原为对象
 	for _, cd := range cds {
 		keys := cd.CryptoFields
 		for _, key := range keys {
