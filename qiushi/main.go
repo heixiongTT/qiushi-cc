@@ -168,7 +168,7 @@ func (t *Chaincode) translateData(stub shim.ChaincodeStubInterface, id, pid, lic
 		fmt.Println(err)
 	}
 	value := string(decryptDataBytes)
-	digests := digestsutils.MD5(value)
+	digests := gjson.Get(encryptJSONValue, "footer.digests").String()
 	signature := rsautils.RSASignature(confs["privKey"], digests)
 
 	footer := common.Footer{
@@ -177,8 +177,7 @@ func (t *Chaincode) translateData(stub shim.ChaincodeStubInterface, id, pid, lic
 	}
 
 	var writeTo = make(map[string]interface{}, 128)
-	writeTo["header"] = header
-	writeTo["footer"] = footer
+
 	rawDataMap, err := common.CryptoDataByDescriptor(value, cds, licensee)
 	if err != nil {
 		return shim.Error("@@CryptoDataByDescriptor meet error: " + err.Error())
@@ -186,6 +185,8 @@ func (t *Chaincode) translateData(stub shim.ChaincodeStubInterface, id, pid, lic
 	for key, value := range rawDataMap {
 		writeTo[key] = value
 	}
+	writeTo["header"] = header
+	writeTo["footer"] = footer
 	bytes, err := json.Marshal(writeTo)
 	if err != nil {
 		return shim.Error("json marshal error: " + err.Error())
