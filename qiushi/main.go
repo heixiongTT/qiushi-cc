@@ -404,7 +404,7 @@ func (t *Chaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 			return t.translateData(stub, args[0], args[1], args[2], "")
 		}
 		if len(args) == 4 {
-			return t.writeMultiSegData(stub, args[0], args[1], args[2], args[3])
+			return t.translateData(stub, args[0], args[1], args[2], args[3])
 		}
 		return shim.Error("parametes's number is wrong")
 	case "del": //删除
