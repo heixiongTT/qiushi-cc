@@ -390,28 +390,23 @@ func (t *Chaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 		return t.queryByParam(stub, args)
 	//"ID","value","EncryptDescriptor"
 	case "encrypt":
-		if len(args) != 3 || len(args) != 4 {
-			return shim.Error("parametes's number is wrong")
-		}
 		if len(args) == 3 {
 			return t.writeMultiSegData(stub, args[0], args[1], args[2], "")
 		}
 		if len(args) == 4 {
 			return t.writeMultiSegData(stub, args[0], args[1], args[2], args[3])
 		}
-		return shim.Error("never reach here.")
+		return shim.Error("parametes's number is wrong")
 	//ID PID Licensee
 	case "translate":
-		if len(args) < 3 || len(args) != 4 {
-			return shim.Error("parametes's number is wrong")
-		}
+
 		if len(args) == 3 {
 			return t.translateData(stub, args[0], args[1], args[2], "")
 		}
 		if len(args) == 4 {
 			return t.writeMultiSegData(stub, args[0], args[1], args[2], args[3])
 		}
-		return shim.Error("never reach here.")
+		return shim.Error("parametes's number is wrong")
 	case "del": //删除
 		if len(args) != 1 {
 			return shim.Error("parametes's number is wrong")
