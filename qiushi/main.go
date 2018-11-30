@@ -127,7 +127,7 @@ func (t *Chaincode) write(stub shim.ChaincodeStubInterface, key, value string) p
 }
 
 //{"Args":["translateData","ID","PID",Licensee]}
-func (t *Chaincode) translateData(stub shim.ChaincodeStubInterface, id, pid, licensee string) pb.Response {
+func (t *Chaincode) translateData(stub shim.ChaincodeStubInterface, id, pid, licensee, metaInfo string) pb.Response {
 	fmt.Printf("id %s,pid is %s,licensee is %s\n", id, pid, licensee)
 	gbytes, gerr := stub.GetState(pid)
 	if gerr != nil {
@@ -155,6 +155,11 @@ func (t *Chaincode) translateData(stub shim.ChaincodeStubInterface, id, pid, lic
 		Partner:          confs["partner"],
 		CryptoDescriptor: cryptoDescriptor,
 	}
+
+	if metaInfo != "" {
+		header.MetaInfo = metaInfo
+	}
+
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -203,7 +208,7 @@ func (t *Chaincode) translateData(stub shim.ChaincodeStubInterface, id, pid, lic
 }
 
 //{"Args":["writeMultiSegData","key","value",cryptoDescriptor]}
-func (t *Chaincode) writeMultiSegData(stub shim.ChaincodeStubInterface, key, value, cryptoDescriptor string) pb.Response {
+func (t *Chaincode) writeMultiSegData(stub shim.ChaincodeStubInterface, key, value, cryptoDescriptor, metaInfo string) pb.Response {
 	fmt.Printf("write %s,value is %s,SegDescriptor is %s\n", key, value, cryptoDescriptor)
 
 	var cds []common.CryptoDescriptor
@@ -223,6 +228,10 @@ func (t *Chaincode) writeMultiSegData(stub shim.ChaincodeStubInterface, key, val
 		Strategy:         string(strategyBytes),
 		Partner:          confs["partner"],
 		CryptoDescriptor: cryptoDescriptor,
+	}
+
+	if metaInfo != "" {
+		header.MetaInfo = metaInfo
 	}
 
 	digests := digestsutils.MD5(value)
@@ -381,16 +390,28 @@ func (t *Chaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 		return t.queryByParam(stub, args)
 	//"ID","value","EncryptDescriptor"
 	case "encrypt":
-		if len(args) != 3 {
+		if len(args) != 3 || len(args) != 4 {
 			return shim.Error("parametes's number is wrong")
 		}
-		return t.writeMultiSegData(stub, args[0], args[1], args[2])
+		if len(args) == 3 {
+			return t.writeMultiSegData(stub, args[0], args[1], args[2], "")
+		}
+		if len(args) == 4 {
+			return t.writeMultiSegData(stub, args[0], args[1], args[2], args[3])
+		}
+		return shim.Error("never reach here.")
 	//ID PID Licensee
 	case "translate":
-		if len(args) != 3 {
+		if len(args) < 3 || len(args) != 4 {
 			return shim.Error("parametes's number is wrong")
 		}
-		return t.translateData(stub, args[0], args[1], args[2])
+		if len(args) == 3 {
+			return t.translateData(stub, args[0], args[1], args[2], "")
+		}
+		if len(args) == 4 {
+			return t.writeMultiSegData(stub, args[0], args[1], args[2], args[3])
+		}
+		return shim.Error("never reach here.")
 	case "del": //删除
 		if len(args) != 1 {
 			return shim.Error("parametes's number is wrong")

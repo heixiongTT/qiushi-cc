@@ -22,6 +22,8 @@ type Header struct {
 
 	//加密描述符
 	CryptoDescriptor string `json:"cryptoDescriptor"`
+
+	MetaInfo string `json:"metaInfo"`
 }
 
 //Footer the data footer in fabric network
