@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	rsautils "github.com/thomasks/qiushi-cc/rsautils"
+	rsautils "github.com/heixiongTT/qiushi-cc/rsautils"
 	"github.com/tidwall/gjson"
 )
 
