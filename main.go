@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/thomasks/qiushi-cc/common"
+	"github.com/heixiongTT/qiushi-cc/common"
 
 	"log"
 
 	"github.com/go-ini/ini"
-	"github.com/thomasks/qiushi-cc/rsautils"
+	"github.com/heixiongTT/qiushi-cc/rsautils"
 )
 
 var testdata = `{"id":52235,"createTime":1530668028893,"merchant":{"id":1,"name":"上海源意酒店有限公司"},"indicator":{"id":10,"code":"YYRB_YSFJ","name":"夜审房金","level":2,"parentId":9},"demension":{"id":1,"code":"YYRB_Label_5_0","name":"发生代码"},"dataPacket":{"id":135,"filePath":"http://demo1.essintra.ejucloud.cn/fbcstore/1/20180704_093344_3861.xls","up2Chain":false},"beginDate":1517414400000,"endDate":1517500800000,"period":"d","value":"1001.0","indicatorIdAndBeginDate":1517414400010}`
