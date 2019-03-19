@@ -9,9 +9,9 @@ import (
 	"github.com/go-ini/ini"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	pb "github.com/hyperledger/fabric/protos/peer"
-	common "github.com/thomasks/qiushi-cc/common"
-	digestsutils "github.com/thomasks/qiushi-cc/digestsutils"
-	rsautils "github.com/thomasks/qiushi-cc/rsautils"
+	common "github.com/heixiongTT/qiushi-cc/common"
+	digestsutils "github.com/heixiongTT/qiushi-cc/digestsutils"
+	rsautils "github.com/heixiongTT/qiushi-cc/rsautils"
 	"github.com/tidwall/gjson"
 )
 
