@@ -1,0 +1,31 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "R4X9XNaty29yYBtQePqu/h3o+Yc=",
+			"path": "github.com/go-ini/ini",
+			"revision": "ece0e89bb05aec0d6768f7bc1e77f11f03da0d11",
+			"revisionTime": "2019-02-17T19:54:15Z"
+		},
+		{
+			"checksumSHA1": "VhIjY7qBL7kiQPIa7Vq+jL2eKBk=",
+			"path": "github.com/heixiongTT/qiushi-cc",
+			"revision": "97c9541680b68eb88deae691a6da079d9ec29a1b",
+			"revisionTime": "2018-11-30T06:33:57Z"
+		},
+		{
+			"checksumSHA1": "hEWGyawOOLIg3hFrH1sGzS1kgso=",
+			"path": "github.com/pavel-v-chernykh/keystore-go",
+			"revision": "7bbcda7e585ed7a01e8610f6e19dde5bc2c1f6d0",
+			"revisionTime": "2018-02-13T13:16:13Z"
+		},
+		{
+			"checksumSHA1": "2NUjuUFK5iVRSulK0/vUHxCwOYo=",
+			"path": "github.com/tidwall/gjson",
+			"revision": "181e11634d88481c14eeda620b056fdfaf330af9",
+			"revisionTime": "2019-02-17T02:21:12Z"
+		}
+	],
+	"rootPath": "github.com/heixiongTT/qiushi-cc"
+}
