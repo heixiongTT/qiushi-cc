@@ -370,6 +370,71 @@ func (t *Chaincode) delByKey(stub shim.ChaincodeStubInterface, key string) pb.Re
 	return shim.Success([]byte("SUCCESS"))
 }
 
+func (t *Chaincode) writeMultiSegDataWithPubKey(stub shim.ChaincodeStubInterface, key, value, cryptoDescriptor, metaInfo string, publicKey string) pb.Response {
+	fmt.Printf("write %s,value is %s,SegDescriptor is %s\n", key, value, cryptoDescriptor)
+
+	var cds []common.CryptoDescriptor
+	if err := json.Unmarshal([]byte(cryptoDescriptor), &cds); err != nil {
+		return shim.Error("unmarshal cryptoDescriptor error: " + err.Error())
+	}
+	strategyBytes, err := json.Marshal(strategyConfs)
+	if err != nil {
+		return shim.Error("marshall strategyConfs error: " + err.Error())
+	}
+
+	header := common.Header{
+		Key:              key,
+		PKey:             key,
+		Licensee:         publicKey,
+		Authorizer:       confs["pubKey"],
+		Strategy:         string(strategyBytes),
+		Partner:          confs["partner"],
+		CryptoDescriptor: cryptoDescriptor,
+	}
+
+	if metaInfo != "" {
+		header.MetaInfo = metaInfo
+	}
+
+	digests := digestsutils.MD5(value)
+	signature := rsautils.RSASignature(confs["privKey"], digests)
+
+	footer := common.Footer{
+		Digests:   digests,
+		Signature: signature,
+	}
+
+	var writeTo = make(map[string]interface{}, 128)
+	writeTo["header"] = header
+	writeTo["footer"] = footer
+	rawDataMap, err := common.CryptoDataByDescriptor(value, cds, confs["pubKey"])
+	if err != nil {
+		return shim.Error("@@CryptoDataByDescriptor meet error: " + err.Error())
+	}
+	for key, value := range rawDataMap {
+		writeTo[key] = value
+	}
+	bytes, err := json.Marshal(writeTo)
+	if err != nil {
+		return shim.Error("json marshal error: " + err.Error())
+	}
+	if err := stub.PutState(key, bytes); err != nil {
+		return shim.Error("write fail " + err.Error())
+	}
+
+	var ret = make(map[string]interface{}, 4)
+
+	txID := stub.GetTxID()
+
+	ret["transactionId"] = txID
+
+	bytes2, err2 := json.Marshal(ret)
+	if err2 != nil {
+		return shim.Error("json marshal error: " + err2.Error())
+	}
+	return shim.Success(bytes2)
+}
+
 //Invoke export
 func (t *Chaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 	function, args := stub.GetFunctionAndParameters()
@@ -396,6 +461,9 @@ func (t *Chaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 		}
 		if len(args) == 4 {
 			return t.writeMultiSegData(stub, args[0], args[1], args[2], args[3])
+		}
+		if len(args) == 5 {
+			return t.writeMultiSegDataWithPubKey(stub, args[0], args[1], args[2], args[3], args[4])
 		}
 		return shim.Error("parametes's number is wrong")
 	//ID PID Licensee
